@@ -1,0 +1,27 @@
+You are given the array nums consisting of n positive integers. You computed the sum of all non-empty continuous subarrays from the array and then sorted them in non-decreasing order, creating a new array of n * (n + 1) / 2 numbers.
+Return the sum of the numbers from index left to index right (indexed from 1), inclusive, in the new array. Since the answer can be a huge number return it modulo 109 + 7.
+
+
+
+//////////////////////////////////////////////////////////////////JAVA///////////////////////////////////////////
+
+
+class Solution {
+    public int rangeSum(int[] nums, int n, int left, int right) {
+        List<Integer> arr=new ArrayList<>();
+        for(int i=0;i<n;i++){
+            int pre=0;
+            for(int j=i;j<n;j++){
+                pre+=nums[j];
+                arr.add(pre);
+            }
+        }
+        Collections.sort(arr);
+        int res=0;
+        int MOD=1000000007;
+        for(int i=left-1;i<right;i++){
+            res=(res+arr.get(i))%MOD;
+        }
+        return res;
+    }
+}
