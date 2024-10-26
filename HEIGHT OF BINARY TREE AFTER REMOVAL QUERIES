@@ -1,0 +1,60 @@
+You are given the root of a binary tree with n nodes. Each node is assigned a unique value from 1 to n. You are also given an array queries of size m.
+You have to perform m independent queries on the tree where in the ith query you do the following:
+Remove the subtree rooted at the node with the value queries[i] from the tree. It is guaranteed that queries[i] will not be equal to the value of the root.
+Return an array answer of size m where answer[i] is the height of the tree after performing the ith query.
+
+Note:
+The queries are independent, so the tree returns to its initial state after each query.
+The height of a tree is the number of edges in the longest simple path from the root to some node in the tree.
+ 
+Example 1:
+Input: root = [1,3,4,2,null,6,5,null,null,null,null,null,7], queries = [4]
+Output: [2]
+Explanation: The diagram above shows the tree after removing the subtree rooted at node with value 4.
+The height of the tree is 2 (The path 1 -> 3 -> 2).
+
+/////////////////////////////////////////////////////////////////////////////JAVA/////////////////////////////////////////////////////////////////////////////
+
+class Solution {
+    Map<Integer, Integer> mp1 = new HashMap<>(), mp2 = new HashMap<>(), sz = new HashMap<>();
+    int id = 0;
+    public int[] treeQueries(TreeNode root, int[] q) {
+        int[] ans = new int[q.length];
+        dfs(root, 0);
+        
+        int[] left = new int[id];
+        int[] right = new int[id];
+        for (int i = 0; i < id; i++) {
+            left[i] = mp2.get(i);
+            if (i > 0) left[i] = Math.max(left[i - 1], left[i]);
+        }
+        
+        for (int i = id - 1; i >= 0; i--) {
+            right[i] = mp2.get(i);
+            if (i + 1 < id) right[i] = Math.max(right[i], right[i + 1]);
+        }
+        
+        for (int i = 0; i < q.length; i++) {
+            int nodeId = mp1.get(q[i]);
+            int l = nodeId, r = l + sz.get(nodeId) - 1;
+            int h = 0;
+            if (l > 0) h = Math.max(h, left[l - 1]);
+            if (r + 1 < id) h = Math.max(h, right[r + 1]);
+            ans[i] = h;
+        }
+        return ans;
+    }
+    
+    private int dfs(TreeNode root, int h) {
+        if (root == null) {
+            return 0;
+        }
+        mp1.put(root.val, id);
+        mp2.put(id, h);
+        id++;
+        int lz = dfs(root.left, h + 1);
+        int rz = dfs(root.right, h + 1);
+        sz.put(mp1.get(root.val), 1 + lz + rz);
+        return 1 + lz + rz;
+    }
+}
